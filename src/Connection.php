@@ -348,7 +348,7 @@ class Connection extends BaseConnection
      * rollback transaction in this session and close this session
      * @author klinson <klinson@163.com>
      */
-    public function rollBack()
+    public function rollBack($toLevel = null)
     {
         if ($session = $this->getSession()) {
             $session->abortTransaction();
