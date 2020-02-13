@@ -26,8 +26,8 @@ class Connection extends BaseConnection
      */
     protected $connection;
 
-    protected $session_key; // sessions会话列表当前会话数组key 随机生成
-    protected $sessions = []; // 会话列表
+    protected $session_key;
+    protected $sessions = [];
 
     /**
      * Create a new database connection instance.
@@ -318,7 +318,6 @@ class Connection extends BaseConnection
      * To use transactions on MongoDB 4.2 deployments(replica sets and sharded clusters), clients must use MongoDB drivers updated for MongoDB 4.2.
      *
      * @see https://docs.mongodb.com/manual/core/transactions/
-     * @author klinson <klinson@163.com>
      */
     public function beginTransaction()
     {
@@ -334,7 +333,6 @@ class Connection extends BaseConnection
 
     /**
      * commit transaction in this session and close this session
-     * @author klinson <klinson@163.com>
      */
     public function commit()
     {
@@ -346,7 +344,6 @@ class Connection extends BaseConnection
 
     /**
      * rollback transaction in this session and close this session
-     * @author klinson <klinson@163.com>
      */
     public function rollBack($toLevel = null)
     {
@@ -359,7 +356,6 @@ class Connection extends BaseConnection
     /**
      * close this session and get last session key to session_key
      * Why do it ? Because nested transactions
-     * @author klinson <klinson@163.com>
      */
     protected function setLastSession()
     {
@@ -378,7 +374,6 @@ class Connection extends BaseConnection
     /**
      * get now session if it has session
      * @return \MongoDB\Driver\Session|null
-     * @author klinson <klinson@163.com>
      */
     public function getSession()
     {
