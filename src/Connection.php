@@ -318,6 +318,7 @@ class Connection extends BaseConnection
      * To use transactions on MongoDB 4.2 deployments(replica sets and sharded clusters), clients must use MongoDB drivers updated for MongoDB 4.2.
      *
      * @see https://docs.mongodb.com/manual/core/transactions/
+     * @return void
      */
     public function beginTransaction()
     {
@@ -333,6 +334,7 @@ class Connection extends BaseConnection
 
     /**
      * commit transaction in this session and close this session
+     * @return void
      */
     public function commit()
     {
@@ -344,6 +346,7 @@ class Connection extends BaseConnection
 
     /**
      * rollback transaction in this session and close this session
+     * @return void
      */
     public function rollBack($toLevel = null)
     {
@@ -356,6 +359,7 @@ class Connection extends BaseConnection
     /**
      * close this session and get last session key to session_key
      * Why do it ? Because nested transactions
+     * @return void
      */
     protected function setLastSession()
     {
