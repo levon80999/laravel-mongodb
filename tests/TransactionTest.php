@@ -212,13 +212,4 @@ class TransactionTest extends TestCase
         $this->assertEquals($result->title, $this->insertData['title']);
         $this->assertNotEquals($newUsersCount, $oldUsersCount);
     }
-
-    public function testTransactionReturnsException(): void
-    {
-        $this->expectException(Exception::class);
-
-        DB::transaction(function () {
-            throw new Exception('dsdssd');
-        });
-    }
 }

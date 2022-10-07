@@ -28,23 +28,19 @@ trait TransactionManager
         $attemptsLeft = $attempts;
         $callbackResult = null;
 
-        try {
-            $callbackFunction = function(Session $session) use ($callback, &$attemptsLeft, &$callbackResult) {
-                $attemptsLeft--;
+        $callbackFunction = function(Session $session) use ($callback, &$attemptsLeft, &$callbackResult) {
+            $attemptsLeft--;
 
-                if ($attemptsLeft < 0) {
-                    $session->abortTransaction();
-                    return;
-                }
+            if ($attemptsLeft < 0) {
+                $session->abortTransaction();
+                return;
+            }
 
-                $callbackResult = $callback();
-            };
+            $callbackResult = $callback();
+        };
 
-            with_transaction($session, $callbackFunction, $options);
+        with_transaction($session, $callbackFunction, $options);
 
-            return $callbackResult;
-        } catch (Exception $exception) {
-            throw new $exception;
-        }
+        return $callbackResult;
     }
 }
