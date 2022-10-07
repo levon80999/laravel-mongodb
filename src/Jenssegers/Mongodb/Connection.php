@@ -5,22 +5,27 @@ namespace Jenssegers\Mongodb;
 use Illuminate\Database\Connection as BaseConnection;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
+use Jenssegers\Mongodb\Concerns\TransactionManager;
 use MongoDB\Client;
+use MongoDB\Database;
 use MongoDB\Driver\ReadConcern;
 use MongoDB\Driver\ReadPreference;
+use MongoDB\Driver\Session;
 use MongoDB\Driver\WriteConcern;
 
 class Connection extends BaseConnection
 {
+    use TransactionManager;
+
     /**
      * The MongoDB database handler.
-     * @var \MongoDB\Database
+     * @var Database
      */
     protected $db;
 
     /**
      * The MongoDB connection handler.
-     * @var \MongoDB\Client
+     * @var Client
      */
     protected $connection;
 
@@ -29,6 +34,7 @@ class Connection extends BaseConnection
      * @var string
      */
     protected $session_key;
+
     /**
      * A list of transaction sessions.
      * @var array
@@ -93,7 +99,7 @@ class Connection extends BaseConnection
      * @param string $name
      * @return Collection
      */
-    public function getCollection($name)
+    public function getCollection(string $name)
     {
         return new Collection($this, $this->db->selectCollection($name));
     }
@@ -108,7 +114,7 @@ class Connection extends BaseConnection
 
     /**
      * Get the MongoDB database object.
-     * @return \MongoDB\Database
+     * @return Database
      */
     public function getMongoDB()
     {
@@ -117,9 +123,9 @@ class Connection extends BaseConnection
 
     /**
      * return MongoDB object.
-     * @return \MongoDB\Client
+     * @return Client
      */
-    public function getMongoClient()
+    public function getMongoClient(): Client
     {
         return $this->connection;
     }
@@ -127,7 +133,7 @@ class Connection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function getDatabaseName()
+    public function getDatabaseName(): string
     {
         return $this->getMongoDB()->getDatabaseName();
     }
@@ -157,7 +163,7 @@ class Connection extends BaseConnection
      * @param string $dsn
      * @param array $config
      * @param array $options
-     * @return \MongoDB\Client
+     * @return Client
      */
     protected function createConnection($dsn, array $config, array $options)
     {
@@ -359,9 +365,9 @@ class Connection extends BaseConnection
 
     /**
      * get now session if it has session
-     * @return \MongoDB\Driver\Session|null
+     * @return Session|null
      */
-    public function getSession()
+    public function getSession(): ?Session
     {
         return $this->sessions[$this->session_key] ?? null;
     }

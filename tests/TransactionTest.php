@@ -162,15 +162,17 @@ class TransactionTest extends TestCase
         $this->assertNull($check1);
     }
 
-    public function testTransaction()
+    public function testTransaction(): void
     {
         $count = User::on($this->connection)->count();
         $this->assertEquals(1, $count);
-        $new_age = $this->originData['age'] + 1;
-        DB::transaction(function () use ($new_age) {
+        $newAge = $this->originData['age'] + 1;
+
+        DB::transaction(function () use ($newAge) {
             User::on($this->connection)->create($this->insertData);
-            User::on($this->connection)->where($this->originData['name'])->update(['age' => $new_age]);
+            User::on($this->connection)->where($this->originData['name'])->update(['age' => $newAge]);
         });
+
         $count = User::on($this->connection)->count();
         $this->assertEquals(2, $count);
 
@@ -178,6 +180,45 @@ class TransactionTest extends TestCase
         $this->assertNotNull($checkInsert);
 
         $checkUpdate = User::on($this->connection)->where($this->originData['name'])->first();
-        $this->assertEquals($new_age, $checkUpdate->age);
+        $this->assertEquals($newAge, $checkUpdate->age);
+    }
+
+    public function testIsTransactionSuccessfullyAbortedWhenAttemptsEnd(): void
+    {
+        $oldUsersCount = User::on($this->connection)->count();
+
+        $result = DB::transaction(function () {
+            User::on($this->connection)->create($this->insertData);
+            User::on($this->connection)->create($this->insertData);
+        }, 0);
+
+        $newUsersCount = User::on($this->connection)->count();
+
+        $this->assertNull($result);
+        $this->assertEquals($newUsersCount, $oldUsersCount);
+    }
+
+    public function testIsDataInTransactionReturnedWhenTransactionWasSuccess(): void
+    {
+        $oldUsersCount = User::on($this->connection)->count();
+
+        $result = DB::transaction(function () {
+            return User::on($this->connection)->create($this->insertData);
+        });
+
+        $newUsersCount = User::on($this->connection)->count();
+
+        $this->assertNotNull($result);
+        $this->assertEquals($result->title, $this->insertData['title']);
+        $this->assertNotEquals($newUsersCount, $oldUsersCount);
+    }
+
+    public function testTransactionReturnsException(): void
+    {
+        $this->expectException(Exception::class);
+
+        DB::transaction(function () {
+            throw new Exception('dsdssd');
+        });
     }
 }
