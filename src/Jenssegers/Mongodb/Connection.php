@@ -8,10 +8,7 @@ use InvalidArgumentException;
 use Jenssegers\Mongodb\Concerns\TransactionManager;
 use MongoDB\Client;
 use MongoDB\Database;
-use MongoDB\Driver\ReadConcern;
-use MongoDB\Driver\ReadPreference;
 use MongoDB\Driver\Session;
-use MongoDB\Driver\WriteConcern;
 
 class Connection extends BaseConnection
 {
@@ -308,16 +305,17 @@ class Connection extends BaseConnection
      * @see https://docs.mongodb.com/manual/core/transactions/
      * @return void
      */
-    public function beginTransaction()
+    public function beginTransaction(?array $options = [])
     {
-        $this->session_key = uniqid();
-        $this->sessions[$this->session_key] = $this->connection->startSession();
+        $session = $this->getSession();
 
-        $this->sessions[$this->session_key]->startTransaction([
-            'readPreference' => new ReadPreference(ReadPreference::RP_PRIMARY),
-            'writeConcern' => new WriteConcern(1),
-            'readConcern' => new ReadConcern(ReadConcern::LOCAL)
-        ]);
+        if (!$session) {
+            $this->session_key = uniqid();
+            $session = $this->connection->startSession();
+            $this->sessions[$this->session_key] = $session;
+        }
+
+        $session->startTransaction($options);
     }
 
     /**
