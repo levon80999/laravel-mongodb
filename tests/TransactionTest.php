@@ -7,7 +7,7 @@ class TransactionTest extends TestCase
 {
     protected array $insertData = ['name' => 'klinson', 'age' => 20, 'title' => 'admin'];
     protected array $originData = ['name' => 'users', 'age' => 20, 'title' => 'user'];
-    protected string $connection = 'dsn_mongodb';
+    protected string $connection = 'mongodb_repl';
 
     public function setUp(): void
     {
