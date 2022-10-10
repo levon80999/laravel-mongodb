@@ -5,9 +5,9 @@ use Illuminate\Support\Facades\DB;
 
 class TransactionTest extends TestCase
 {
-    protected $insertData = ['name' => 'klinson', 'age' => 20, 'title' => 'admin'];
-    protected $originData = ['name' => 'users', 'age' => 20, 'title' => 'user'];
-    protected $connection = 'mongodb_repl';
+    protected array $insertData = ['name' => 'klinson', 'age' => 20, 'title' => 'admin'];
+    protected array $originData = ['name' => 'users', 'age' => 20, 'title' => 'user'];
+    protected string $connection = 'dsn_mongodb';
 
     public function setUp(): void
     {
@@ -211,5 +211,16 @@ class TransactionTest extends TestCase
         $this->assertNotNull($result);
         $this->assertEquals($result->title, $this->insertData['title']);
         $this->assertNotEquals($newUsersCount, $oldUsersCount);
+    }
+
+    public function testThrowExceptionForNestedTransactions(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(53 /* InvalidIdField */);
+
+        DB::beginTransaction();
+            DB::beginTransaction();
+            DB::commit();
+        DB::rollBack();
     }
 }
