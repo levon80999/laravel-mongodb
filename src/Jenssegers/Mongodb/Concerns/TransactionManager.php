@@ -20,14 +20,13 @@ trait TransactionManager
      * @see https://docs.mongodb.com/manual/core/transactions/
      * @return void
      */
-    public function beginTransaction(?array $options = [])
+    public function beginTransaction(array $options = [])
     {
         $session = $this->getSession();
 
         if (!$session) {
-            $this->session_key = uniqid();
             $session = $this->connection->startSession();
-            $this->sessions[$this->session_key] = $session;
+            $this->session = $session;
         }
 
         $session->startTransaction($options);
@@ -41,7 +40,6 @@ trait TransactionManager
     {
         if ($session = $this->getSession()) {
             $session->commitTransaction();
-            $this->setLastSession();
         }
     }
 
@@ -53,26 +51,6 @@ trait TransactionManager
     {
         if ($session = $this->getSession()) {
             $session->abortTransaction();
-            $this->setLastSession();
-        }
-    }
-
-    /**
-     * close this session and get last session key to session_key
-     * Why do it ? Because nested transactions
-     * @return void
-     */
-    protected function setLastSession()
-    {
-        if ($session = $this->getSession()) {
-            $session->endSession();
-            unset($this->sessions[$this->session_key]);
-            if (empty($this->sessions)) {
-                $this->session_key = null;
-            } else {
-                end($this->sessions);
-                $this->session_key = key($this->sessions);
-            }
         }
     }
 
@@ -82,7 +60,7 @@ trait TransactionManager
      */
     public function getSession(): ?Session
     {
-        return $this->sessions[$this->session_key] ?? null;
+        return $this->session ?? null;
     }
 
     /**

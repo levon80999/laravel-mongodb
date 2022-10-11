@@ -27,16 +27,10 @@ class Connection extends BaseConnection
     protected $connection;
 
     /**
-     * A random unique id for identification of transaction.
-     * @var string
+     * A list of transaction session.
+     * @var Session
      */
-    protected $session_key;
-
-    /**
-     * A list of transaction sessions.
-     * @var array
-     */
-    protected $sessions = [];
+    protected $session;
 
     /**
      * Create a new database connection instance.
@@ -107,7 +101,7 @@ class Connection extends BaseConnection
      * @param string $name
      * @return Collection
      */
-    public function getCollection(string $name)
+    public function getCollection($name)
     {
         return new Collection($this, $this->db->selectCollection($name));
     }
@@ -133,7 +127,7 @@ class Connection extends BaseConnection
      * return MongoDB object.
      * @return Client
      */
-    public function getMongoClient(): Client
+    public function getMongoClient()
     {
         return $this->connection;
     }
@@ -141,7 +135,7 @@ class Connection extends BaseConnection
     /**
      * {@inheritdoc}
      */
-    public function getDatabaseName(): string
+    public function getDatabaseName()
     {
         return $this->getMongoDB()->getDatabaseName();
     }
