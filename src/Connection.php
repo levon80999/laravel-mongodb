@@ -5,23 +5,34 @@ namespace Jenssegers\Mongodb;
 use Illuminate\Database\Connection as BaseConnection;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
+use Jenssegers\Mongodb\Concerns\TransactionManager;
 use MongoDB\Client;
+use MongoDB\Database;
+use MongoDB\Driver\Session;
 
 class Connection extends BaseConnection
 {
+    use TransactionManager;
+
     /**
      * The MongoDB database handler.
      *
-     * @var \MongoDB\Database
+     * @var Database
      */
     protected $db;
 
     /**
      * The MongoDB connection handler.
      *
-     * @var \MongoDB\Client
+     * @var Client
      */
     protected $connection;
+
+    /**
+     * A list of transaction session.
+     * @var Session
+     */
+    protected $session;
 
     /**
      * Create a new database connection instance.
@@ -52,6 +63,17 @@ class Connection extends BaseConnection
         $this->useDefaultSchemaGrammar();
 
         $this->useDefaultQueryGrammar();
+    }
+
+    /**
+     * Dynamically pass methods to the connection.
+     * @param string $method
+     * @param array $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        return call_user_func_array([$this->db, $method], $parameters);
     }
 
     /**
@@ -101,7 +123,7 @@ class Connection extends BaseConnection
     /**
      * Get the MongoDB database object.
      *
-     * @return \MongoDB\Database
+     * @return Database
      */
     public function getMongoDB()
     {
@@ -111,7 +133,7 @@ class Connection extends BaseConnection
     /**
      * return MongoDB object.
      *
-     * @return \MongoDB\Client
+     * @return Client
      */
     public function getMongoClient()
     {
@@ -153,7 +175,7 @@ class Connection extends BaseConnection
      * @param string $dsn
      * @param array $config
      * @param array $options
-     * @return \MongoDB\Client
+     * @return Client
      */
     protected function createConnection($dsn, array $config, array $options)
     {
@@ -280,27 +302,5 @@ class Connection extends BaseConnection
     protected function getDefaultSchemaGrammar()
     {
         return new Schema\Grammar();
-    }
-
-    /**
-     * Set database.
-     *
-     * @param \MongoDB\Database $db
-     */
-    public function setDatabase(\MongoDB\Database $db)
-    {
-        $this->db = $db;
-    }
-
-    /**
-     * Dynamically pass methods to the connection.
-     *
-     * @param string $method
-     * @param array $parameters
-     * @return mixed
-     */
-    public function __call($method, $parameters)
-    {
-        return call_user_func_array([$this->db, $method], $parameters);
     }
 }
