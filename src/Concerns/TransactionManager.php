@@ -11,7 +11,7 @@ use function MongoDB\with_transaction;
 trait TransactionManager
 {
     /**
-     * create a session and start a transaction in session
+     * Use the existing or create new session and start a transaction in session
      *
      * In version 4.0, MongoDB supports multi-document transactions on replica sets.
      * In version 4.2, MongoDB introduces distributed transactions, which adds support for multi-document transactions on sharded clusters and incorporates the existing support for multi-document transactions on replica sets.
