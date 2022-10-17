@@ -302,7 +302,7 @@ class Connection extends BaseConnection
      * @param array $parameters
      * @return mixed
      */
-    public function __call(string $method, $parameters)
+    public function __call($method, $parameters)
     {
         return $this->db->$method(...$parameters);
 //        return call_user_func_array([$this->db, $method], $parameters);
