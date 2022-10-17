@@ -345,8 +345,7 @@ class Builder extends BaseBuilder
                 $options = array_merge($options, $this->options);
             }
 
-            // if transaction in session
-            $options = $this->setSession($options);
+            $options = $this->inheritConnectionOptions($options);
 
             // Execute aggregation
             $results = iterator_to_array($this->collection->aggregate($pipeline, $options));
@@ -358,9 +357,7 @@ class Builder extends BaseBuilder
             // Return distinct results directly
             $column = isset($this->columns[0]) ? $this->columns[0] : '_id';
 
-            $options = [];
-            // if transaction in session
-            $options = $this->setSession($options);
+            $options = $this->inheritConnectionOptions();
 
             // Execute distinct
             $result = $this->collection->distinct($column, $wheres ?: [], $options);
@@ -409,8 +406,7 @@ class Builder extends BaseBuilder
                 $options = array_merge($options, $this->options);
             }
 
-            // if transaction in session
-            $options = $this->setSession($options);
+            $options = $this->inheritConnectionOptions($options);
 
             // Execute query and get MongoCursor
             $cursor = $this->collection->find($wheres, $options);
@@ -586,8 +582,7 @@ class Builder extends BaseBuilder
             $values = [$values];
         }
 
-        // if transaction in session
-        $options = $this->setSession();
+        $options = $this->inheritConnectionOptions();
 
         $result = $this->collection->insertMany($values, $options);
 
@@ -599,8 +594,7 @@ class Builder extends BaseBuilder
      */
     public function insertGetId(array $values, $sequence = null)
     {
-        // if transaction in session
-        $options = $this->setSession();
+        $options = $this->inheritConnectionOptions();
 
         $result = $this->collection->insertOne($values, $options);
 
@@ -623,8 +617,8 @@ class Builder extends BaseBuilder
         if (! Str::startsWith(key($values), '$')) {
             $values = ['$set' => $values];
         }
-        // if transaction in session
-        $options = $this->setSession($options);
+
+        $options = $this->inheritConnectionOptions($options);
 
         return $this->performUpdate($values, $options);
     }
@@ -647,8 +641,7 @@ class Builder extends BaseBuilder
             $query->orWhereNotNull($column);
         });
 
-        // if transaction in session
-        $options = $this->setSession($options);
+        $options = $this->inheritConnectionOptions($options);
 
         return $this->performUpdate($query, $options);
     }
@@ -711,9 +704,7 @@ class Builder extends BaseBuilder
         }
 
         $wheres = $this->compileWheres();
-
-        // if transaction in session
-        $options = $this->setSession();
+        $options = $this->inheritConnectionOptions();
 
         $result = $this->collection->DeleteMany($wheres, $options);
         if (1 == (int) $result->isAcknowledged()) {
@@ -740,9 +731,7 @@ class Builder extends BaseBuilder
      */
     public function truncate(): bool
     {
-        // Check if transaction exist in session
-        $options = $this->setSession();
-
+        $options = $this->inheritConnectionOptions();
         $result = $this->collection->deleteMany($options);
 
         return 1 === (int) $result->isAcknowledged();
@@ -876,8 +865,7 @@ class Builder extends BaseBuilder
             $options['multiple'] = true;
         }
 
-        // Check if transaction exist in session
-        $options = $this->setSession($options);
+        $options = $this->inheritConnectionOptions($options);
 
         $wheres = $this->compileWheres();
         $result = $this->collection->UpdateMany($wheres, $query, $options);
@@ -1274,15 +1262,14 @@ class Builder extends BaseBuilder
     }
 
     /**
-     * Set session for the transaction
-     * @param $session
-     * @return mixed
+     * Apply the connection's session to options if it's not already specified.
      */
-    protected function setSession($options = [])
+    private function inheritConnectionOptions(array $options = []): array
     {
         if (!isset($options['session']) && ($session = $this->connection->getSession())) {
             $options['session'] = $session;
         }
+
         return $options;
     }
 

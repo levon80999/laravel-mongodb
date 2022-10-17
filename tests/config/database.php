@@ -33,6 +33,10 @@ return [
             'driver' => 'mongodb',
             'dsn' => "mongodb://$mongoHost:$mongoPort",
             'database' => env('MONGO_DATABASE', 'unittest'),
+            'options'   => [
+                'replicaSet'                => 'rs',
+                'serverSelectionTryOnce'    => false,
+            ],
         ],
 
         'dsn_mongodb_db' => [

@@ -986,7 +986,7 @@ Transaction requires MongoDB version ^4.0 as well as deployment of replica set o
 
 ### Basic Usage
 
-Transaction supports CREATE/INSERT/UPDATE/DELETE operations.
+Transaction supports all operations.
 
 ```php
 DB::transaction(function () {
@@ -1009,14 +1009,13 @@ DB::commit();
 // you can also rollback them
 //DB::rollBack();
 ```
-
-**NOTE:** Transaction supports infinite-level of nested transactions, but outside transaction rollbacks do not affect the commits of inside transactions.
+**NOTE:** Transaction does not support nested transactions. DB::beginTransaction() function will start new transactions in a new created or existing session and will raise the RuntimeException when transactions already exist. See more in MongoDB official docs [Transactions and Sessions](https://www.mongodb.com/docs/manual/core/transactions/#transactions-and-sessions)
 ```php
 DB::beginTransaction();
-User::create(['name' => 'john', 'age' => 20, 'title' => 'admin']);
-DB::transaction(function () {
-    DB::collection('users')->where('name', 'john')->update(['age' => 20]);
-});
+    User::create(['name' => 'john', 'age' => 20, 'title' => 'admin']);
+    DB::beginTransaction()
+        DB::collection('users')->where('name', 'john')->update(['age' => 20]);
+    DB::commit()
 DB::rollBack();
 ```
 

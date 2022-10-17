@@ -8,7 +8,6 @@ use InvalidArgumentException;
 use Jenssegers\Mongodb\Concerns\TransactionManager;
 use MongoDB\Client;
 use MongoDB\Database;
-use MongoDB\Driver\Session;
 
 class Connection extends BaseConnection
 {
@@ -27,12 +26,6 @@ class Connection extends BaseConnection
      * @var Client
      */
     protected $connection;
-
-    /**
-     * A list of transaction session.
-     * @var Session
-     */
-    protected $session;
 
     /**
      * Create a new database connection instance.
@@ -63,17 +56,6 @@ class Connection extends BaseConnection
         $this->useDefaultSchemaGrammar();
 
         $this->useDefaultQueryGrammar();
-    }
-
-    /**
-     * Dynamically pass methods to the connection.
-     * @param string $method
-     * @param array $parameters
-     * @return mixed
-     */
-    public function __call($method, $parameters)
-    {
-        return call_user_func_array([$this->db, $method], $parameters);
     }
 
     /**
@@ -302,5 +284,27 @@ class Connection extends BaseConnection
     protected function getDefaultSchemaGrammar()
     {
         return new Schema\Grammar();
+    }
+
+    /**
+     * Set database.
+     *
+     * @param \MongoDB\Database $db
+     */
+    public function setDatabase(\MongoDB\Database $db)
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * Dynamically pass methods to the connection.
+     * @param string $method
+     * @param array $parameters
+     * @return mixed
+     */
+    public function __call(string $method, $parameters)
+    {
+        return $this->db->$method(...$parameters);
+//        return call_user_func_array([$this->db, $method], $parameters);
     }
 }

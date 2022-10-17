@@ -3,7 +3,6 @@
 namespace Jenssegers\Mongodb\Concerns;
 
 use Closure;
-use Exception;
 use MongoDB\Driver\Session;
 
 use function MongoDB\with_transaction;
@@ -11,20 +10,34 @@ use function MongoDB\with_transaction;
 trait TransactionManager
 {
     /**
+     * A list of transaction session.
+     * @var Session|null
+     */
+    protected ?Session $session;
+
+    /**
+     * Get the existing session or null.
+     */
+    public function getSession(): ?Session
+    {
+        return $this->session ?? null;
+    }
+
+    /**
      * Use the existing or create new session and start a transaction in session
      *
      * In version 4.0, MongoDB supports multi-document transactions on replica sets.
      * In version 4.2, MongoDB introduces distributed transactions, which adds support for multi-document transactions on sharded clusters and incorporates the existing support for multi-document transactions on replica sets.
-     * To use transactions on MongoDB 4.2 deployments(replica sets and sharded clusters), clients must use MongoDB drivers updated for MongoDB 4.2.
      *
      * @see https://docs.mongodb.com/manual/core/transactions/
+     * @param array $options
      * @return void
      */
-    public function beginTransaction(array $options = [])
+    public function beginTransaction(array $options = []): void
     {
         $session = $this->getSession();
 
-        if (!$session) {
+        if ($session === null) {
             $session = $this->connection->startSession();
             $this->session = $session;
         }
@@ -36,50 +49,42 @@ trait TransactionManager
      * commit transaction in this session and close this session
      * @return void
      */
-    public function commit()
+    public function commit(): void
     {
-        if ($session = $this->getSession()) {
-            $session->commitTransaction();
-        }
+        $session = $this->getSession();
+
+        $session?->commitTransaction();
     }
 
     /**
      * rollback transaction in this session and close this session
+     * @param null $toLevel
      * @return void
      */
-    public function rollBack($toLevel = null)
+    public function rollBack($toLevel = null): void
     {
-        if ($session = $this->getSession()) {
-            $session->abortTransaction();
-        }
-    }
+        $session = $this->getSession();
 
-    /**
-     * get now session if it has session
-     * @return Session|null
-     */
-    public function getSession(): ?Session
-    {
-        return $this->session ?? null;
+        $session?->abortTransaction();
     }
 
     /**
      * Static transaction function realize the with_transaction functionality provided by MongoDB.
      *
-     * @see https://www.mongodb.com/docs/manual/core/transactions/
-     *
      * @param Closure $callback
      * @param int $attempts
      * @param array $options
-     *
-     * @return Exception|mixed|null
-     * @throws Exception
      */
-    public function transaction(Closure $callback, $attempts = 1, array $options = [])
+    public function transaction(Closure $callback, $attempts = 1, array $options = []): mixed
     {
-        $session = $this->connection->startSession();
         $attemptsLeft = $attempts;
         $callbackResult = null;
+        $session = $this->getSession();
+
+        if ($session === null) {
+            $session = $this->connection->startSession();
+            $this->session = $session;
+        }
 
         $callbackFunction = function(Session $session) use ($callback, &$attemptsLeft, &$callbackResult) {
             $attemptsLeft--;
