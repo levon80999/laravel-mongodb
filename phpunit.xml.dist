@@ -20,7 +20,6 @@
             <file>tests/QueryTest.php</file>
         </testsuite>
         <testsuite name="transaction">
-            <file>tests/TransactionBuilderTest.php</file>
             <file>tests/TransactionTest.php</file>
         </testsuite>
         <testsuite name="model">
