@@ -1,9 +1,9 @@
 <?php
 
 $mongoHost = env('MONGO_HOST', 'mongodb');
-$mongoReplHost  = env('MONGO_REPL_HOST', 'mongodb_repl');
+$mongoReplHost = env('MONGO_REPL_HOST', 'mongodb_repl');
 $mongoPort = env('MONGO_PORT') ? (int) env('MONGO_PORT') : 27017;
-$mongoReplPort  = env('MONGO_REPL_PORT') ? (int) env('MONGO_REPL_PORT') : 27018;
+$mongoReplPort = env('MONGO_REPL_PORT') ? (int) env('MONGO_REPL_PORT') : 27018;
 $mysqlPort = env('MYSQL_PORT') ? (int) env('MYSQL_PORT') : 3306;
 
 return [

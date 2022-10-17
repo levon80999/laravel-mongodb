@@ -4,7 +4,6 @@ namespace Jenssegers\Mongodb\Concerns;
 
 use Closure;
 use MongoDB\Driver\Session;
-
 use function MongoDB\with_transaction;
 
 trait TransactionManager
@@ -24,7 +23,7 @@ trait TransactionManager
     }
 
     /**
-     * Use the existing or create new session and start a transaction in session
+     * Use the existing or create new session and start a transaction in session.
      *
      * In version 4.0, MongoDB supports multi-document transactions on replica sets.
      * In version 4.2, MongoDB introduces distributed transactions, which adds support for multi-document transactions on sharded clusters and incorporates the existing support for multi-document transactions on replica sets.
@@ -46,7 +45,7 @@ trait TransactionManager
     }
 
     /**
-     * commit transaction in this session and close this session
+     * Commit transaction in this session and close this session.
      * @return void
      */
     public function commit(): void
@@ -57,7 +56,7 @@ trait TransactionManager
     }
 
     /**
-     * rollback transaction in this session and close this session
+     * Rollback transaction in this session and close this session.
      * @param null $toLevel
      * @return void
      */
@@ -86,7 +85,7 @@ trait TransactionManager
             $this->session = $session;
         }
 
-        $callbackFunction = function(Session $session) use ($callback, &$attemptsLeft, &$callbackResult) {
+        $callbackFunction = function (Session $session) use ($callback, &$attemptsLeft, &$callbackResult) {
             $attemptsLeft--;
 
             if ($attemptsLeft < 0) {

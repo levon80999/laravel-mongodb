@@ -1266,7 +1266,7 @@ class Builder extends BaseBuilder
      */
     private function inheritConnectionOptions(array $options = []): array
     {
-        if (!isset($options['session']) && ($session = $this->connection->getSession())) {
+        if (! isset($options['session']) && ($session = $this->connection->getSession())) {
             $options['session'] = $session;
         }
 
