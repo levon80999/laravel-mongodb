@@ -5,7 +5,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 
 class TransactionTest extends TestCase
 {
-    protected string $connection = 'mongodb';
+    protected string $connection = 'dsn_mongodb';
 
     public function setUp(): void
     {
