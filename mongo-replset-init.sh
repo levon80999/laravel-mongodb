@@ -14,7 +14,7 @@ echo "Started.."
 echo setup.sh time now: `date +"%T" `
 mongosh --host ${mongodbHost}:${port} <<EOF
    var cfg = {
-        "_id": rs,
+        "_id": ${rs},
         "protocolVersion": 1,
         "members": [
             {
