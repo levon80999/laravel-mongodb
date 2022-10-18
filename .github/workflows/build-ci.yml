@@ -36,14 +36,13 @@ jobs:
             matrix:
                 include:
                     - { os: ubuntu-latest, php: 8.0, mongodb: '4.0', experimental: false }
-                    - { os: ubuntu-latest, php: 8.0, mongodb: 4.2, experimental: false }
-                    - { os: ubuntu-latest, php: 8.0, mongodb: 4.4, experimental: false }
+                    - { os: ubuntu-latest, php: 8.0, mongodb: '4.2', experimental: false }
+                    - { os: ubuntu-latest, php: 8.0, mongodb: '4.4', experimental: false }
                     - { os: ubuntu-latest, php: 8.0, mongodb: '5.0', experimental: false }
                     - { os: ubuntu-latest, php: 8.1, mongodb: '4.0', experimental: false }
-                    - { os: ubuntu-latest, php: 8.1, mongodb: 4.2, experimental: false }
-                    - { os: ubuntu-latest, php: 8.1, mongodb: 4.4, experimental: false }
+                    - { os: ubuntu-latest, php: 8.1, mongodb: '4.2', experimental: false }
+                    - { os: ubuntu-latest, php: 8.1, mongodb: '4.4', experimental: false }
                     - { os: ubuntu-latest, php: 8.1, mongodb: '5.0', experimental: false }
-                    - { os: ubuntu-latest, php: 8.1, mongodb: '6.0', experimental: false }
         services:
             mongo:
                 image: mongo:${{ matrix.mongodb }}
@@ -63,10 +62,10 @@ jobs:
             -   name: Creating MongoDB replica
                 run: |
                     docker run --name mongodb -e MONGO_INITDB_DATABASE=unittest --detach mongo:${{ matrix.mongodb }} mongod --replSet rs
-                    until docker exec --tty mongodb mongosh 127.0.0.1:27017 --eval "db.serverStatus()"; do
+                    until docker exec --tty mongodb mongo 127.0.0.1:27017 --eval "db.serverStatus()"; do
                     sleep 1
                     done
-                    sudo docker exec --tty mongodb mongosh 127.0.0.1:27017 --eval "rs.initiate({\"_id\":\"rs\",\"members\":[{\"_id\":0,\"host\":\"127.0.0.1:27017\" }]})"
+                    sudo docker exec --tty mongodb mongo 127.0.0.1:27017 --eval "rs.initiate({\"_id\":\"rs\",\"members\":[{\"_id\":0,\"host\":\"127.0.0.1:27017\" }]})"
                 env:
                     MONGO_HOST: 0.0.0.0
             -   name: "Installing php"
