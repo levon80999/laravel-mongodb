@@ -41,6 +41,7 @@ services:
         depends_on:
             - mongodb
         environment:
+            - MONGO=mongodb
             - RS=rs
         volumes:
             - ./:/scripts

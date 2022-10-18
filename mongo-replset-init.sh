@@ -1,6 +1,6 @@
 #!/bin/bash
-mongodbHost='127.0.0.1'
-
+mongodbHost="${MONGO}"
+rs=${RS}
 port=${PORT:-27017}
 
 echo "Waiting for startup.."
@@ -14,7 +14,7 @@ echo "Started.."
 echo setup.sh time now: `date +"%T" `
 mongosh --host ${mongodbHost}:${port} <<EOF
    var cfg = {
-        "_id": "rs",
+        "_id": rs,
         "protocolVersion": 1,
         "members": [
             {
