@@ -12,9 +12,9 @@ done
 echo "Started.."
 
 echo setup.sh time now: `date +"%T" `
-mongo --host ${mongodbHost}:${port} <<EOF
+mongosh --host ${mongodbHost}:${port} <<EOF
    var cfg = {
-        "_id": "${RS}",
+        "_id": "rs",
         "protocolVersion": 1,
         "members": [
             {
@@ -24,5 +24,4 @@ mongo --host ${mongodbHost}:${port} <<EOF
         ]
     };
     rs.initiate(cfg, { force: true });
-    rs.reconfig(cfg, { force: true });
 EOF

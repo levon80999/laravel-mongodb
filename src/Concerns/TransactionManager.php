@@ -90,6 +90,7 @@ trait TransactionManager
 
             if ($attemptsLeft < 0) {
                 $session->abortTransaction();
+
                 return;
             }
 
