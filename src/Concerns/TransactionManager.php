@@ -3,6 +3,7 @@
 namespace Jenssegers\Mongodb\Concerns;
 
 use Closure;
+use MongoDB\Driver\Exception\RuntimeException;
 use MongoDB\Driver\Session;
 use function MongoDB\with_transaction;
 
@@ -50,6 +51,7 @@ trait TransactionManager
      */
     public function commit(): void
     {
+        $this->throwExceptionIfTransactionDoesNotStart();
         $session = $this->getSession();
 
         $session?->commitTransaction();
@@ -62,6 +64,7 @@ trait TransactionManager
      */
     public function rollBack($toLevel = null): void
     {
+        $this->throwExceptionIfTransactionDoesNotStart();
         $session = $this->getSession();
 
         $session?->abortTransaction();
@@ -100,5 +103,18 @@ trait TransactionManager
         with_transaction($session, $callbackFunction, $options);
 
         return $callbackResult;
+    }
+
+    private function throwExceptionIfTransactionDoesNotStart() : void
+    {
+        $session = $this->getSession();
+
+        if ($session === null) {
+            throw new RuntimeException('There is no active session.', 206 /* NoSuchSession */);
+        }
+
+        if ($session->isInTransaction() === false) {
+            throw new RuntimeException('There is no active transaction.', 244 /* NOT_YET_AVAILABLE_TransactionAborted */);
+        }
     }
 }

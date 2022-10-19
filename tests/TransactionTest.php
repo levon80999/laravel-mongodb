@@ -5,7 +5,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 
 class TransactionTest extends TestCase
 {
-    protected string $connection = 'mongodb_repl';
+    protected string $connection = 'dsn_mongodb';
 
     public function setUp(): void
     {
@@ -399,5 +399,31 @@ class TransactionTest extends TestCase
             DB::transaction(function () {
             });
         DB::rollBack();
+    }
+
+    public function testThrowExceptionWhenCallCommitBeforeStartTransaction(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(206 /* NoSuchSession */);
+
+        DB::commit();
+    }
+
+    public function testThrowExceptionWhenCallRollbackBeforeStartTransaction(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(206 /* NoSuchSession */);
+
+        DB::rollback();
+    }
+
+    public function testThrowExceptionWhenCallRollbackAfterCommit(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode(244 /* NOT_YET_AVAILABLE_TransactionAborted */);
+        DB::beginTransaction();
+        DB::commit();
+
+        DB::rollback();
     }
 }
