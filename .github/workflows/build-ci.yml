@@ -61,7 +61,7 @@ jobs:
             -   uses: actions/checkout@v2
             -   name: Creating MongoDB replica
                 run: |
-                    docker run --name mongodb -e MONGO_INITDB_DATABASE=unittest --publish 27017:27017 --detach mongo:${{ matrix.mongodb }} mongod --replSet rs
+                    docker run --name mongodb -e MONGO_INITDB_DATABASE=unittest --detach mongo:${{ matrix.mongodb }} mongod --replSet rs
                     until docker exec --tty mongodb mongo 127.0.0.1:27017 --eval "db.serverStatus()"; do
                     sleep 1
                     done

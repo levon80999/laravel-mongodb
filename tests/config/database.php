@@ -13,6 +13,10 @@ return [
             'driver' => 'mongodb',
             'host' => $mongoHost,
             'database' => env('MONGO_DATABASE', 'unittest'),
+            'options'   => [
+                'replicaSet'                => 'rs',
+                'serverSelectionTryOnce'    => false,
+            ],
         ],
 
         'dsn_mongodb' => [
