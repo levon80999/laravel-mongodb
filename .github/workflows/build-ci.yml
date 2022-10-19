@@ -77,8 +77,6 @@ jobs:
                     tools: composer
             -   name: Show PHP version
                 run: php -v && composer -V
-            -   name: Show MongoDB Port
-                run: lsof -i tcp:27017
             -   name: Show Docker version
                 run: if [[ "$DEBUG" == "true" ]]; then docker version && env; fi
                 env:
@@ -100,8 +98,6 @@ jobs:
                     ./vendor/bin/phpunit --coverage-clover coverage.xml
                 env:
                     MONGO_VERSION: ${{ matrix.mongodb }})
-                    MONGO_HOST: 0.0.0.0
-                    MONGO_PORT: 27017
                     MYSQL_HOST: 0.0.0.0
                     MYSQL_PORT: 3307
             -   uses: codecov/codecov-action@v1
