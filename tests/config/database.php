@@ -3,7 +3,7 @@
 $mongoHost = env('MONGO_HOST', 'mongodb');
 $mongoPort = env('MONGO_PORT') ? (int) env('MONGO_PORT') : 27017;
 $mysqlPort = env('MYSQL_PORT') ? (int) env('MYSQL_PORT') : 3306;
-echo "-".$mongoHost."-".$mongoPort."-";
+
 return [
 
     'connections' => [
