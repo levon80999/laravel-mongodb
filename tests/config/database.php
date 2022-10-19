@@ -14,8 +14,9 @@ return [
             'host' => $mongoHost,
             'database' => env('MONGO_DATABASE', 'unittest'),
             'options'   => [
-                'replicaSet'                => 'rs',
-                'serverSelectionTryOnce'    => false,
+                'replicaSet'               => 'rs',
+                'connectTimeoutMS'         => 100,
+                'serverSelectionTimeoutMS' => 250,
             ],
         ],
 
@@ -24,8 +25,9 @@ return [
             'dsn' => "mongodb://$mongoHost:$mongoPort",
             'database' => env('MONGO_DATABASE', 'unittest'),
             'options'   => [
-                'replicaSet'                => 'rs',
-                'serverSelectionTryOnce'    => false,
+                'replicaSet'               => 'rs',
+                'connectTimeoutMS'         => 100,
+                'serverSelectionTimeoutMS' => 250,
             ],
         ],
 

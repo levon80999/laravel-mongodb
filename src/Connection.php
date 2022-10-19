@@ -138,7 +138,7 @@ class Connection extends BaseConnection
      * @return string
      * @throws InvalidArgumentException
      */
-    protected function getDefaultDatabaseName($dsn, $config)
+    protected function getDefaultDatabaseName(string $dsn, array $config): string
     {
         if (empty($config['database'])) {
             if (preg_match('/^mongodb(?:[+]srv)?:\\/\\/.+\\/([^?&]+)/s', $dsn, $matches)) {
@@ -159,7 +159,7 @@ class Connection extends BaseConnection
      * @param array $options
      * @return Client
      */
-    protected function createConnection($dsn, array $config, array $options)
+    protected function createConnection($dsn, array $config, array $options): Client
     {
         // By default driver options is an empty array.
         $driverOptions = [];
@@ -204,7 +204,7 @@ class Connection extends BaseConnection
      * @param array $config
      * @return string
      */
-    protected function getDsnString(array $config)
+    protected function getDsnString(array $config): string
     {
         return $config['dsn'];
     }
@@ -215,7 +215,7 @@ class Connection extends BaseConnection
      * @param array $config
      * @return string
      */
-    protected function getHostDsn(array $config)
+    protected function getHostDsn(array $config): string
     {
         // Treat host option as array of hosts
         $hosts = is_array($config['host']) ? $config['host'] : [$config['host']];
@@ -239,7 +239,7 @@ class Connection extends BaseConnection
      * @param array $config
      * @return string
      */
-    protected function getDsn(array $config)
+    protected function getDsn(array $config): string
     {
         return $this->hasDsnString($config)
             ? $this->getDsnString($config)
@@ -281,7 +281,7 @@ class Connection extends BaseConnection
     /**
      * @inheritdoc
      */
-    protected function getDefaultSchemaGrammar()
+    protected function getDefaultSchemaGrammar(): Schema\Grammar
     {
         return new Schema\Grammar();
     }

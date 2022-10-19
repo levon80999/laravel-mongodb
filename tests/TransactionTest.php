@@ -66,6 +66,7 @@ class TransactionTest extends TestCase
         DB::beginTransaction();
             DB::collection('users')->insert(['name' => 'klinson', 'age' => 20, 'title' => 'admin']);
         DB::commit();
+
         $existUser = DB::collection('users')->where('name', 'klinson')->where('age', 20)->where('title', 'admin')->exists();
         $this->assertTrue($existUser);
     }
@@ -75,6 +76,7 @@ class TransactionTest extends TestCase
         DB::beginTransaction();
             DB::collection('users')->insert(['name' => 'klinson', 'age' => 20, 'title' => 'admin']);
         DB::rollBack();
+
         $existUser = DB::collection('users')->where('name', 'klinson')->where('age', 20)->where('title', 'admin')->exists();
         $this->assertFalse($existUser);
     }

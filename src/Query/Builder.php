@@ -919,7 +919,7 @@ class Builder extends BaseBuilder
      *
      * @return array
      */
-    protected function compileWheres()
+    protected function compileWheres(): array
     {
         // The wheres to compile.
         $wheres = $this->wheres ?: [];
@@ -1016,7 +1016,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereAll(array $where)
+    protected function compileWhereAll(array $where): array
     {
         extract($where);
 
@@ -1027,7 +1027,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereBasic(array $where)
+    protected function compileWhereBasic(array $where): array
     {
         extract($where);
 
@@ -1083,7 +1083,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return mixed
      */
-    protected function compileWhereNested(array $where)
+    protected function compileWhereNested(array $where): mixed
     {
         extract($where);
 
@@ -1094,7 +1094,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereIn(array $where)
+    protected function compileWhereIn(array $where): array
     {
         extract($where);
 
@@ -1105,7 +1105,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereNotIn(array $where)
+    protected function compileWhereNotIn(array $where): array
     {
         extract($where);
 
@@ -1116,7 +1116,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereNull(array $where)
+    protected function compileWhereNull(array $where): array
     {
         $where['operator'] = '=';
         $where['value'] = null;
@@ -1128,7 +1128,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereNotNull(array $where)
+    protected function compileWhereNotNull(array $where): array
     {
         $where['operator'] = '!=';
         $where['value'] = null;
@@ -1140,7 +1140,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereBetween(array $where)
+    protected function compileWhereBetween(array $where): array
     {
         extract($where);
 
@@ -1173,7 +1173,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereDate(array $where)
+    protected function compileWhereDate(array $where): array
     {
         extract($where);
 
@@ -1187,7 +1187,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereMonth(array $where)
+    protected function compileWhereMonth(array $where): array
     {
         extract($where);
 
@@ -1201,7 +1201,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereDay(array $where)
+    protected function compileWhereDay(array $where): array
     {
         extract($where);
 
@@ -1215,7 +1215,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereYear(array $where)
+    protected function compileWhereYear(array $where): array
     {
         extract($where);
 
@@ -1229,7 +1229,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereTime(array $where)
+    protected function compileWhereTime(array $where): array
     {
         extract($where);
 
@@ -1243,7 +1243,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return mixed
      */
-    protected function compileWhereRaw(array $where)
+    protected function compileWhereRaw(array $where): mixed
     {
         return $where['sql'];
     }
