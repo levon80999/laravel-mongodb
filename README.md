@@ -1009,8 +1009,9 @@ DB::commit();
 // you can also rollback them
 //DB::rollBack();
 ```
-**NOTE:** Transaction does not support nested transactions. DB::beginTransaction() function will start new transactions in a new created or existing session and will raise the RuntimeException when transactions already exist. See more in MongoDB official docs [Transactions and Sessions](https://www.mongodb.com/docs/manual/core/transactions/#transactions-and-sessions)
+**NOTE:** The Transactions in MongoDb does not support nested transactions. DB::beginTransaction() function will start new transactions in a new created or existing session and will raise the RuntimeException when transactions already exist. See more in MongoDB official docs [Transactions and Sessions](https://www.mongodb.com/docs/manual/core/transactions/#transactions-and-sessions)
 ```php
+// This code will rise RuntimeException
 DB::beginTransaction();
     User::create(['name' => 'john', 'age' => 20, 'title' => 'admin']);
     DB::beginTransaction()
