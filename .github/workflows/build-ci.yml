@@ -77,6 +77,8 @@ jobs:
                     tools: composer
             -   name: Show PHP version
                 run: php -v && composer -V
+            -   name: Show MongoDB Port
+                run: lsof -i tcp:27017
             -   name: Show Docker version
                 run: if [[ "$DEBUG" == "true" ]]; then docker version && env; fi
                 env:
