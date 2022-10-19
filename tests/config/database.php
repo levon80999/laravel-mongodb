@@ -34,6 +34,11 @@ return [
         'dsn_mongodb_db' => [
             'driver' => 'mongodb',
             'dsn' => "mongodb://$mongoHost:$mongoPort/".env('MONGO_DATABASE', 'unittest'),
+            'options'   => [
+                'replicaSet'               => 'rs',
+                'connectTimeoutMS'         => 100,
+                'serverSelectionTimeoutMS' => 250,
+            ],
         ],
 
         'mysql' => [
