@@ -31,6 +31,8 @@ class TransactionTest extends TestCase
 
     public function testCreateWhenTransactionCommitted(): void
     {
+        $this->skipIfTransactionsAreNotSupported();
+
         DB::beginTransaction();
             /** @var User $user */
             $user = User::on($this->connection)->create(['name' => 'klinson', 'age' => 20, 'title' => 'admin']);
