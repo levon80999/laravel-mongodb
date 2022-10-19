@@ -1,9 +1,7 @@
 <?php
 
 $mongoHost = env('MONGO_HOST', 'mongodb');
-$mongoReplHost  = env('MONGO_REPL_HOST', 'mongodb_repl');
 $mongoPort = env('MONGO_PORT') ? (int) env('MONGO_PORT') : 27017;
-$mongoReplPort  = env('MONGO_REPL_PORT') ? (int) env('MONGO_REPL_PORT') : 27018;
 $mysqlPort = env('MYSQL_PORT') ? (int) env('MYSQL_PORT') : 3306;
 
 return [
@@ -15,18 +13,6 @@ return [
             'driver' => 'mongodb',
             'host' => $mongoHost,
             'database' => env('MONGO_DATABASE', 'unittest'),
-            'options'   => [
-                'replicaSet'                => 'rs',
-                'serverSelectionTryOnce'    => false,
-            ],
-        ],
-
-        'mongodb_repl' => [
-            'name'      => 'mongodb_repl',
-            'driver'    => 'mongodb',
-            'host'      => $mongoReplHost,
-            'port'      => $mongoReplPort,
-            'database'  => env('MONGO_DATABASE', 'unittest'),
             'options'   => [
                 'replicaSet'                => 'rs',
                 'serverSelectionTryOnce'    => false,
