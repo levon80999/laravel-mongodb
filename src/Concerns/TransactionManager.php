@@ -105,7 +105,7 @@ trait TransactionManager
         return $callbackResult;
     }
 
-    private function throwExceptionIfTransactionDoesNotStart() : void
+    private function throwExceptionIfTransactionDoesNotStart(): void
     {
         $session = $this->getSession();
 
