@@ -345,6 +345,8 @@ class Builder extends BaseBuilder
                 $options = array_merge($options, $this->options);
             }
 
+            $options = $this->inheritConnectionOptions($options);
+
             // Execute aggregation
             $results = iterator_to_array($this->collection->aggregate($pipeline, $options));
 
@@ -355,12 +357,10 @@ class Builder extends BaseBuilder
             // Return distinct results directly
             $column = isset($this->columns[0]) ? $this->columns[0] : '_id';
 
+            $options = $this->inheritConnectionOptions();
+
             // Execute distinct
-            if ($wheres) {
-                $result = $this->collection->distinct($column, $wheres);
-            } else {
-                $result = $this->collection->distinct($column);
-            }
+            $result = $this->collection->distinct($column, $wheres ?: [], $options);
 
             return new Collection($result);
         } // Normal query
@@ -405,6 +405,8 @@ class Builder extends BaseBuilder
             if (count($this->options)) {
                 $options = array_merge($options, $this->options);
             }
+
+            $options = $this->inheritConnectionOptions($options);
 
             // Execute query and get MongoCursor
             $cursor = $this->collection->find($wheres, $options);
@@ -580,8 +582,9 @@ class Builder extends BaseBuilder
             $values = [$values];
         }
 
-        // Batch insert
-        $result = $this->collection->insertMany($values);
+        $options = $this->inheritConnectionOptions();
+
+        $result = $this->collection->insertMany($values, $options);
 
         return 1 == (int) $result->isAcknowledged();
     }
@@ -591,7 +594,9 @@ class Builder extends BaseBuilder
      */
     public function insertGetId(array $values, $sequence = null)
     {
-        $result = $this->collection->insertOne($values);
+        $options = $this->inheritConnectionOptions();
+
+        $result = $this->collection->insertOne($values, $options);
 
         if (1 == (int) $result->isAcknowledged()) {
             if ($sequence === null) {
@@ -613,6 +618,8 @@ class Builder extends BaseBuilder
             $values = ['$set' => $values];
         }
 
+        $options = $this->inheritConnectionOptions($options);
+
         return $this->performUpdate($values, $options);
     }
 
@@ -633,6 +640,8 @@ class Builder extends BaseBuilder
 
             $query->orWhereNotNull($column);
         });
+
+        $options = $this->inheritConnectionOptions($options);
 
         return $this->performUpdate($query, $options);
     }
@@ -695,7 +704,10 @@ class Builder extends BaseBuilder
         }
 
         $wheres = $this->compileWheres();
-        $result = $this->collection->DeleteMany($wheres);
+        $options = $this->inheritConnectionOptions();
+
+        $result = $this->collection->deleteMany($wheres, $options);
+
         if (1 == (int) $result->isAcknowledged()) {
             return $result->getDeletedCount();
         }
@@ -720,7 +732,8 @@ class Builder extends BaseBuilder
      */
     public function truncate(): bool
     {
-        $result = $this->collection->deleteMany([]);
+        $options = $this->inheritConnectionOptions();
+        $result = $this->collection->deleteMany($options);
 
         return 1 === (int) $result->isAcknowledged();
     }
@@ -853,6 +866,8 @@ class Builder extends BaseBuilder
             $options['multiple'] = true;
         }
 
+        $options = $this->inheritConnectionOptions($options);
+
         $wheres = $this->compileWheres();
         $result = $this->collection->UpdateMany($wheres, $query, $options);
         if (1 == (int) $result->isAcknowledged()) {
@@ -905,7 +920,7 @@ class Builder extends BaseBuilder
      *
      * @return array
      */
-    protected function compileWheres()
+    protected function compileWheres(): array
     {
         // The wheres to compile.
         $wheres = $this->wheres ?: [];
@@ -1002,7 +1017,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereAll(array $where)
+    protected function compileWhereAll(array $where): array
     {
         extract($where);
 
@@ -1013,7 +1028,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereBasic(array $where)
+    protected function compileWhereBasic(array $where): array
     {
         extract($where);
 
@@ -1069,7 +1084,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return mixed
      */
-    protected function compileWhereNested(array $where)
+    protected function compileWhereNested(array $where): mixed
     {
         extract($where);
 
@@ -1080,7 +1095,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereIn(array $where)
+    protected function compileWhereIn(array $where): array
     {
         extract($where);
 
@@ -1091,7 +1106,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereNotIn(array $where)
+    protected function compileWhereNotIn(array $where): array
     {
         extract($where);
 
@@ -1102,7 +1117,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereNull(array $where)
+    protected function compileWhereNull(array $where): array
     {
         $where['operator'] = '=';
         $where['value'] = null;
@@ -1114,7 +1129,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereNotNull(array $where)
+    protected function compileWhereNotNull(array $where): array
     {
         $where['operator'] = '!=';
         $where['value'] = null;
@@ -1126,7 +1141,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereBetween(array $where)
+    protected function compileWhereBetween(array $where): array
     {
         extract($where);
 
@@ -1159,7 +1174,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereDate(array $where)
+    protected function compileWhereDate(array $where): array
     {
         extract($where);
 
@@ -1173,7 +1188,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereMonth(array $where)
+    protected function compileWhereMonth(array $where): array
     {
         extract($where);
 
@@ -1187,7 +1202,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereDay(array $where)
+    protected function compileWhereDay(array $where): array
     {
         extract($where);
 
@@ -1201,7 +1216,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereYear(array $where)
+    protected function compileWhereYear(array $where): array
     {
         extract($where);
 
@@ -1215,7 +1230,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return array
      */
-    protected function compileWhereTime(array $where)
+    protected function compileWhereTime(array $where): array
     {
         extract($where);
 
@@ -1229,7 +1244,7 @@ class Builder extends BaseBuilder
      * @param array $where
      * @return mixed
      */
-    protected function compileWhereRaw(array $where)
+    protected function compileWhereRaw(array $where): mixed
     {
         return $where['sql'];
     }
@@ -1245,6 +1260,18 @@ class Builder extends BaseBuilder
         $this->options = $options;
 
         return $this;
+    }
+
+    /**
+     * Apply the connection's session to options if it's not already specified.
+     */
+    private function inheritConnectionOptions(array $options = []): array
+    {
+        if (! isset($options['session']) && ($session = $this->connection->getSession())) {
+            $options['session'] = $session;
+        }
+
+        return $options;
     }
 
     /**

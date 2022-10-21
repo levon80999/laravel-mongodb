@@ -5,21 +5,25 @@ namespace Jenssegers\Mongodb;
 use Illuminate\Database\Connection as BaseConnection;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
+use Jenssegers\Mongodb\Concerns\TransactionManager;
 use MongoDB\Client;
+use MongoDB\Database;
 
 class Connection extends BaseConnection
 {
+    use TransactionManager;
+
     /**
      * The MongoDB database handler.
      *
-     * @var \MongoDB\Database
+     * @var Database
      */
     protected $db;
 
     /**
      * The MongoDB connection handler.
      *
-     * @var \MongoDB\Client
+     * @var Client
      */
     protected $connection;
 
@@ -101,7 +105,7 @@ class Connection extends BaseConnection
     /**
      * Get the MongoDB database object.
      *
-     * @return \MongoDB\Database
+     * @return Database
      */
     public function getMongoDB()
     {
@@ -111,7 +115,7 @@ class Connection extends BaseConnection
     /**
      * return MongoDB object.
      *
-     * @return \MongoDB\Client
+     * @return Client
      */
     public function getMongoClient()
     {
@@ -134,7 +138,7 @@ class Connection extends BaseConnection
      * @return string
      * @throws InvalidArgumentException
      */
-    protected function getDefaultDatabaseName($dsn, $config)
+    protected function getDefaultDatabaseName(string $dsn, array $config): string
     {
         if (empty($config['database'])) {
             if (preg_match('/^mongodb(?:[+]srv)?:\\/\\/.+\\/([^?&]+)/s', $dsn, $matches)) {
@@ -153,9 +157,9 @@ class Connection extends BaseConnection
      * @param string $dsn
      * @param array $config
      * @param array $options
-     * @return \MongoDB\Client
+     * @return Client
      */
-    protected function createConnection($dsn, array $config, array $options)
+    protected function createConnection($dsn, array $config, array $options): Client
     {
         // By default driver options is an empty array.
         $driverOptions = [];
@@ -200,7 +204,7 @@ class Connection extends BaseConnection
      * @param array $config
      * @return string
      */
-    protected function getDsnString(array $config)
+    protected function getDsnString(array $config): string
     {
         return $config['dsn'];
     }
@@ -211,7 +215,7 @@ class Connection extends BaseConnection
      * @param array $config
      * @return string
      */
-    protected function getHostDsn(array $config)
+    protected function getHostDsn(array $config): string
     {
         // Treat host option as array of hosts
         $hosts = is_array($config['host']) ? $config['host'] : [$config['host']];
@@ -235,7 +239,7 @@ class Connection extends BaseConnection
      * @param array $config
      * @return string
      */
-    protected function getDsn(array $config)
+    protected function getDsn(array $config): string
     {
         return $this->hasDsnString($config)
             ? $this->getDsnString($config)
@@ -294,13 +298,12 @@ class Connection extends BaseConnection
 
     /**
      * Dynamically pass methods to the connection.
-     *
      * @param string $method
      * @param array $parameters
      * @return mixed
      */
     public function __call($method, $parameters)
     {
-        return call_user_func_array([$this->db, $method], $parameters);
+        return $this->db->$method(...$parameters);
     }
 }

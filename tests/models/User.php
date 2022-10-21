@@ -93,7 +93,7 @@ class User extends Eloquent implements AuthenticatableContract, CanResetPassword
 
     protected function username(): Attribute
     {
-        return Attribute::make(
+        return new Attribute(
             get: fn ($value) => $value,
             set: fn ($value) => Str::slug($value)
         );

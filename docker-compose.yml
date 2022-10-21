@@ -10,12 +10,16 @@ services:
             - .:/code
         working_dir: /code
         depends_on:
-          - mongodb
-          - mysql
+            - mongodb
+            - mongo_repl_init
+            - mysql
+        stdin_open: true
+        tty: true
 
     mysql:
         container_name: mysql
         image: mysql:5.7
+        platform: "linux/amd64"
         ports:
             - 3306:3306
         environment:
@@ -27,8 +31,18 @@ services:
 
     mongodb:
         container_name: mongodb
-        image: mongo
+        image: mongo:6.0
         ports:
-            - 27017:27017
-        logging:
-            driver: none
+            - "27017:27017"
+        entrypoint: [ "/usr/bin/mongod", "--quiet", "--bind_ip_all", "--replSet", "rs" ]
+
+    mongo_repl_init:
+        image: mongo:6.0
+        depends_on:
+            - mongodb
+        environment:
+            - MONGO=mongodb
+            - RS=rs
+        volumes:
+            - ./:/scripts
+        entrypoint: [ "sh", "-c", "./scripts/mongo-replset-init.sh" ]
