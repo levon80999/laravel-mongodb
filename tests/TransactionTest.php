@@ -406,7 +406,6 @@ class TransactionTest extends TestCase
     public function testThrowExceptionWhenCallCommitBeforeStartTransaction(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionCode(206 /* NoSuchSession */);
 
         DB::commit();
     }
@@ -414,7 +413,6 @@ class TransactionTest extends TestCase
     public function testThrowExceptionWhenCallRollbackBeforeStartTransaction(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionCode(206 /* NoSuchSession */);
 
         DB::rollback();
     }
@@ -422,7 +420,7 @@ class TransactionTest extends TestCase
     public function testThrowExceptionWhenCallRollbackAfterCommit(): void
     {
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionCode(244 /* NOT_YET_AVAILABLE_TransactionAborted */);
+
         DB::beginTransaction();
         DB::commit();
 

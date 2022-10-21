@@ -3,44 +3,32 @@
 $mongoHost = env('MONGO_HOST', 'mongodb');
 $mongoPort = env('MONGO_PORT') ? (int) env('MONGO_PORT') : 27017;
 $mysqlPort = env('MYSQL_PORT') ? (int) env('MYSQL_PORT') : 3306;
+$options = [
+    'replicaSet'               => 'rs',
+    'connectTimeoutMS'         => 100,
+    'serverSelectionTimeoutMS' => 250,
+];
 
 return [
-
     'connections' => [
-
         'mongodb' => [
             'name' => 'mongodb',
             'driver' => 'mongodb',
             'host' => $mongoHost,
             'database' => env('MONGO_DATABASE', 'unittest'),
-            'options'   => [
-                'replicaSet'               => 'rs',
-                'connectTimeoutMS'         => 100,
-                'serverSelectionTimeoutMS' => 250,
-            ],
+            'options'   => $options,
         ],
-
         'dsn_mongodb' => [
             'driver' => 'mongodb',
             'dsn' => "mongodb://$mongoHost:$mongoPort",
             'database' => env('MONGO_DATABASE', 'unittest'),
-            'options'   => [
-                'replicaSet'               => 'rs',
-                'connectTimeoutMS'         => 100,
-                'serverSelectionTimeoutMS' => 250,
-            ],
+            'options'   => $options,
         ],
-
         'dsn_mongodb_db' => [
             'driver' => 'mongodb',
             'dsn' => "mongodb://$mongoHost:$mongoPort/".env('MONGO_DATABASE', 'unittest'),
-            'options'   => [
-                'replicaSet'               => 'rs',
-                'connectTimeoutMS'         => 100,
-                'serverSelectionTimeoutMS' => 250,
-            ],
+            'options'   => $options,
         ],
-
         'mysql' => [
             'driver' => 'mysql',
             'host' => env('MYSQL_HOST', 'mysql'),
@@ -53,5 +41,4 @@ return [
             'prefix' => '',
         ],
     ],
-
 ];

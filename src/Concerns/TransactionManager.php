@@ -11,16 +11,26 @@ trait TransactionManager
 {
     /**
      * A list of transaction session.
-     * @var Session|null
      */
-    protected ?Session $session;
+    protected ?Session $session = null;
 
     /**
      * Get the existing session or null.
      */
     public function getSession(): ?Session
     {
-        return $this->session ?? null;
+        return $this->session;
+    }
+
+    private function getSessionOrThrow(): Session
+    {
+        $session = $this->getSession();
+
+        if ($session === null) {
+            throw new RuntimeException('There is no active session.');
+        }
+
+        return $session;
     }
 
     /**
@@ -30,8 +40,6 @@ trait TransactionManager
      * In version 4.2, MongoDB introduces distributed transactions, which adds support for multi-document transactions on sharded clusters and incorporates the existing support for multi-document transactions on replica sets.
      *
      * @see https://docs.mongodb.com/manual/core/transactions/
-     * @param array $options
-     * @return void
      */
     public function beginTransaction(array $options = []): void
     {
@@ -47,35 +55,24 @@ trait TransactionManager
 
     /**
      * Commit transaction in this session and close this session.
-     * @return void
      */
     public function commit(): void
     {
-        $this->throwExceptionIfTransactionDoesNotStart();
-        $session = $this->getSession();
-
-        $session?->commitTransaction();
+        $this->getSessionOrThrow()->commitTransaction();
     }
 
     /**
      * Rollback transaction in this session and close this session.
-     * @param null $toLevel
-     * @return void
      */
     public function rollBack($toLevel = null): void
     {
-        $this->throwExceptionIfTransactionDoesNotStart();
-        $session = $this->getSession();
-
-        $session?->abortTransaction();
+        $this->getSessionOrThrow()->abortTransaction();
     }
 
     /**
      * Static transaction function realize the with_transaction functionality provided by MongoDB.
      *
-     * @param Closure $callback
      * @param int $attempts
-     * @param array $options
      */
     public function transaction(Closure $callback, $attempts = 1, array $options = []): mixed
     {
@@ -103,18 +100,5 @@ trait TransactionManager
         with_transaction($session, $callbackFunction, $options);
 
         return $callbackResult;
-    }
-
-    private function throwExceptionIfTransactionDoesNotStart(): void
-    {
-        $session = $this->getSession();
-
-        if ($session === null) {
-            throw new RuntimeException('There is no active session.', 206 /* NoSuchSession */);
-        }
-
-        if ($session->isInTransaction() === false) {
-            throw new RuntimeException('There is no active transaction.', 244 /* NOT_YET_AVAILABLE_TransactionAborted */);
-        }
     }
 }

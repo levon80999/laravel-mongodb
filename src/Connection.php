@@ -281,7 +281,7 @@ class Connection extends BaseConnection
     /**
      * @inheritdoc
      */
-    protected function getDefaultSchemaGrammar(): Schema\Grammar
+    protected function getDefaultSchemaGrammar()
     {
         return new Schema\Grammar();
     }
